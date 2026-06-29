@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Halaman Admin Dashboard Walatra Herbal - Kelola produk, barcode keaslian, pesan pelanggan, dan log verifikasi.">
+    <meta name="author" content="Walatra Herbal Premium">
+    <title>Panel Admin - Walatra Herbal Premium</title>
+
+    <!-- Shortcut Icon -->
+    <link rel="shortcut icon" type="image/png" href="https://walatraherbal.com/walatra.ico">
+
+    <!-- Google Fonts (Poppins & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Bootstrap v5.0.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Theme Styles & Admin Overrides -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="admin-body">
+
+    <!-- ==========================================
+       LOGIN WRAPPER (Ditampilkan jika belum login)
+       ========================================== -->
+    <div id="login-wrapper" class="login-wrapper">
+        <div class="login-card text-center">
+            <div class="mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50% 50% 50% 0; color: white; font-size: 1.5rem;">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <h1 class="login-logo mt-2 mb-1">Walatra<span>Admin</span></h1>
+                <p class="text-white-50 small">Sistem Sinkronisasi Database Tugas Akhir</p>
+            </div>
+
+            <div id="login-alert" class="alert alert-danger d-none small py-2 text-start" role="alert">
+                <i class="fa-solid fa-circle-exclamation me-1"></i> Username atau password salah!
+            </div>
+
+            <form id="login-form" autocomplete="off">
+                <div class="mb-3 text-start">
+                    <label for="username" class="form-label-admin">Username</label>
+                    <input type="text" id="username" class="form-control form-control-admin" placeholder="Masukkan username" required>
+                </div>
+                <div class="mb-4 text-start">
+                    <label for="password" class="form-label-admin">Password</label>
+                    <div class="position-relative">
+                        <input type="password" id="password" class="form-control form-control-admin" placeholder="Masukkan password" required>
+                        <button type="button" id="toggle-pw" class="btn text-white-50 position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent pe-3" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-admin-gold w-100 py-2.5 font-poppins"><i class="fa-solid fa-right-to-bracket me-2"></i> Masuk ke Panel</button>
+            </form>
+            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
+                <a href="index.html" class="text-white-50 small hover-gold"><i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Halaman Utama</a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================
+       ADMIN MAIN LAYOUT (Ditampilkan jika sudah login)
+       ========================================== -->
+    <div id="admin-layout" class="admin-container d-none">
+        
+        <!-- Mobile Header Bar -->
+        <header class="admin-mobile-header">
+            <a href="#" class="logo d-flex align-items-center text-decoration-none">
+                <div class="logo-icon me-2" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <span class="logo-text text-white" style="font-size: 1.25rem;">Walatra<span class="text-success">Herbal</span></span>
+            </a>
+            <button id="admin-mobile-toggle" class="admin-mobile-toggle" aria-label="Toggle Navigation Menu">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <aside id="admin-sidebar" class="admin-sidebar">
+            <div class="admin-logo-area">
+                <a href="index.html" class="logo d-flex align-items-center text-decoration-none">
+                    <div class="logo-icon me-2">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <span class="logo-text text-white">Walatra<span class="text-success">Herbal</span></span>
+                </a>
+                <span class="badge bg-gold-gradient text-dark fw-bold mt-2 font-poppins" style="font-size: 0.75rem; letter-spacing: 0.5px;">PANEL ADMIN v1.0</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="sidebar-link active" data-target="section-overview">
+                    <i class="fa-solid fa-chart-pie"></i> Ringkasan Dasbor
+                </div>
+                <div class="sidebar-link" data-target="section-products">
+                    <i class="fa-solid fa-box-open"></i> Kelola Produk
+                </div>
+                <div class="sidebar-link" data-target="section-barcodes">
+                    <i class="fa-solid fa-qrcode"></i> Kelola Barcode
+                </div>
+                <div class="sidebar-link d-flex justify-content-between align-items-center" data-target="section-messages">
+                    <span><i class="fa-solid fa-envelope"></i> Pesan Masuk</span>
+                    <span id="unread-badge" class="badge bg-danger rounded-pill d-none">0</span>
+                </div>
+                <div class="sidebar-link" data-target="section-logs">
+                    <i class="fa-solid fa-list-check"></i> Log Verifikasi
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-outline-danger w-100 text-start d-flex align-items-center justify-content-between py-2 px-3" style="border-color: rgba(220, 53, 69, 0.2); background-color: rgba(220, 53, 69, 0.05); color: #dc3545;">
+                    <span><i class="fa-solid fa-right-from-bracket me-2"></i> Keluar</span>
+                    <i class="fa-solid fa-angle-right small"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="admin-main">
+            
+            <!-- Top Header Status Bar -->
+            <div class="admin-header-bar">
+                <div>
+                    <h2 id="current-section-title" class="admin-title">Ringkasan Dasbor</h2>
+                    <p id="current-section-subtitle" class="admin-subtitle">Statistik umum dan aktivitas terbaru data Walatra Herbal.</p>
+                </div>
+                <div class="admin-user-info">
+                    <div class="text-end d-none d-md-block">
+                        <div class="fw-bold font-poppins text-white" id="admin-user-fullname">Administrator</div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem;">Role: Super Admin</div>
+                    </div>
+                    <div class="admin-avatar">AD</div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+               SECTION: OVERVIEW (RINGKASAN DASBOR)
+               ========================================== -->
+            <div id="section-overview" class="admin-section active">
+                <!-- Stat Grid -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-box-open"></i></div>
+                            <div class="stat-title">Total Produk</div>
+                            <div class="stat-value text-white" id="stat-total-products">0</div>
+                            <div class="stat-trend success"><i class="fa-solid fa-circle-check"></i> Sinkron Aktif</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-qrcode"></i></div>
+                            <div class="stat-title">Barcode Terdaftar</div>
+                            <div class="stat-value text-white" id="stat-total-barcodes">0</div>
+                            <div class="stat-trend success"><i class="fa-solid fa-shield-check"></i> Database Terkunci</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-envelope"></i></div>
+                            <div class="stat-title">Pesan Baru (Unread)</div>
+                            <div class="stat-value text-warning" id="stat-unread-messages">0</div>
+                            <div class="stat-trend warning" id="stat-messages-trend"><i class="fa-solid fa-bell"></i> Perlu Tindak Lanjut</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                            <div class="stat-title">Total Scan Verifikasi</div>
+                            <div class="stat-value text-white" id="stat-total-scans">0</div>
+                            <div class="stat-trend text-info" id="stat-logs-trend"><i class="fa-solid fa-clock-rotate-left"></i> Kunjungan Pelanggan</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activities Summary Row -->
+                <div class="row g-4">
+                    <!-- Left: Recent scan logs -->
+                    <div class="col-lg-7">
+                        <div class="admin-card-table h-100 mb-0">
+                            <div class="card-title-admin text-white">
+                                <span><i class="fa-solid fa-clock-rotate-left me-2 text-success"></i> Verifikasi Kode Terkini</span>
+                                <button class="btn btn-sm btn-admin-outline" onclick="document.querySelector('[data-target=section-logs]').click()"><i class="fa-solid fa-eye me-1"></i> Semua Log</button>
+                            </div>
+                            <div class="table-responsive-admin">
+                                <table class="table table-admin">
+                                    <thead>
+                                        <tr>
+                                            <th>Waktu Scan</th>
+                                            <th>Barcode</th>
+                                            <th>Hasil Verifikasi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="overview-logs-table">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Recent messages -->
+                    <div class="col-lg-5">
+                        <div class="admin-card-table h-100 mb-0">
+                            <div class="card-title-admin text-white">
+                                <span><i class="fa-solid fa-envelope-open-text me-2 text-warning"></i> Konsultasi Terkini</span>
+                                <button class="btn btn-sm btn-admin-outline" onclick="document.querySelector('[data-target=section-messages]').click()"><i class="fa-solid fa-eye me-1"></i> Semua Inbox</button>
+                            </div>
+                            <div id="overview-messages-list" class="d-flex flex-column gap-3">
+                                <!-- Dynamic message bubbles -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+               SECTION: KELOLA PRODUK
+               ========================================== -->
+            <div id="section-products" class="admin-section">
+                <div class="admin-card-table">
+                    <div class="card-title-admin text-white">
+                        <span><i class="fa-solid fa-boxes-stacked me-2 text-success"></i> Daftar Produk Walatra</span>
+                        <button class="btn btn-admin-primary btn-sm" id="btn-add-product"><i class="fa-solid fa-plus me-1"></i> Tambah Produk Baru</button>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <i class="fa-solid fa-magnifying-glass position-absolute start-0 top-50 translate-middle-y ms-3 text-white-50"></i>
+                            <input type="text" id="search-products" class="form-control form-control-admin ps-5" placeholder="Cari berdasarkan nama atau kategori...">
+                        </div>
+                    </div>
+                    <div class="table-responsive-admin">
+                        <table class="table table-admin">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Foto Utama</th>
+                                    <th>Nama Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Harga</th>
+                                    <th>No BPOM</th>
+                                    <th>Badge</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <!-- Dynamic products rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+               SECTION: KELOLA BARCODE
+               ========================================== -->
+            <div id="section-barcodes" class="admin-section">
+                <div class="admin-card-table">
+                    <div class="card-title-admin text-white">
+                        <span><i class="fa-solid fa-qrcode me-2 text-success"></i> Database Barcode Keaslian</span>
+                        <button class="btn btn-admin-primary btn-sm" id="btn-add-barcode"><i class="fa-solid fa-plus me-1"></i> Tambah Barcode Baru</button>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <i class="fa-solid fa-magnifying-glass position-absolute start-0 top-50 translate-middle-y ms-3 text-white-50"></i>
+                            <input type="text" id="search-barcodes" class="form-control form-control-admin ps-5" placeholder="Cari berdasarkan kode barcode atau batch...">
+                        </div>
+                    </div>
+                    <div class="table-responsive-admin">
+                        <table class="table table-admin">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Kode Barcode</th>
+                                    <th>Relasi Produk</th>
+                                    <th>Status</th>
+                                    <th>No Batch</th>
+                                    <th>Tgl Produksi</th>
+                                    <th>Tgl Expired</th>
+                                    <th class="text-end">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="barcodes-table-body">
+                                <!-- Dynamic barcodes rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+               SECTION: PESAN MASUK
+               ========================================== -->
+            <div id="section-messages" class="admin-section">
+                <div class="admin-card-table">
+                    <div class="card-title-admin text-white">
+                        <span><i class="fa-solid fa-inbox me-2 text-success"></i> Kotak Masuk Konsultasi Pelanggan</span>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <i class="fa-solid fa-magnifying-glass position-absolute start-0 top-50 translate-middle-y ms-3 text-white-50"></i>
+                            <input type="text" id="search-messages" class="form-control form-control-admin ps-5" placeholder="Cari nama pengirim, subjek atau pesan...">
+                        </div>
+                    </div>
+                    <div class="table-responsive-admin">
+                        <table class="table table-admin">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Pengirim</th>
+                                    <th>Kontak WA</th>
+                                    <th>Subjek / Keperluan</th>
+                                    <th>Isi Pesan</th>
+                                    <th>Waktu Diterima</th>
+                                    <th class="text-end">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messages-table-body">
+                                <!-- Dynamic message rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+               SECTION: LOG VERIFIKASI
+               ========================================== -->
+            <div id="section-logs" class="admin-section">
+                <div class="admin-card-table">
+                    <div class="card-title-admin text-white">
+                        <span><i class="fa-solid fa-shield-halved me-2 text-success"></i> Riwayat Verifikasi Keaslian</span>
+                        <button class="btn btn-danger btn-sm" id="btn-clear-logs"><i class="fa-solid fa-trash-can me-1"></i> Bersihkan Log</button>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <i class="fa-solid fa-magnifying-glass position-absolute start-0 top-50 translate-middle-y ms-3 text-white-50"></i>
+                            <input type="text" id="search-logs" class="form-control form-control-admin ps-5" placeholder="Cari kode barcode atau hasil verifikasi...">
+                        </div>
+                    </div>
+                    <div class="table-responsive-admin">
+                        <table class="table table-admin">
+                            <thead>
+                                <tr>
+                                    <th>Waktu Scan</th>
+                                    <th>Kode Diinput</th>
+                                    <th>Hasil</th>
+                                    <th>User Agent / Informasi Browser</th>
+                                    <th class="text-end">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body">
+                                <!-- Dynamic logs rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <!-- ==========================================
+       MODAL DIALOGS
+       ========================================== -->
+
+    <!-- 1. Modal CRUD Produk -->
+    <div class="modal fade" id="modal-product" tabindex="-1" aria-labelledby="modal-product-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-content-admin">
+                <div class="modal-header modal-header-admin">
+                    <h5 class="modal-title modal-title-admin text-white" id="modal-product-title">Form Produk</h5>
+                    <button type="button" class="btn-close btn-close-admin" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form-product" autocomplete="off">
+                    <input type="hidden" id="product-id-val">
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="product-name" class="form-label-admin">Nama Produk <span class="text-danger">*</span></label>
+                                <input type="text" id="product-name" class="form-control form-control-admin" placeholder="Contoh: QnC Jelly Gamat" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="product-category" class="form-label-admin">Kategori <span class="text-danger">*</span></label>
+                                <select id="product-category" class="form-select form-control-admin" required style="background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3e%3cpath fill=\'none\' stroke=\'%23ffffff\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M2 5l6 6 6-6\'/%3e%3c/svg%3e');">
+                                    <option value="" disabled selected>-- Pilih Kategori --</option>
+                                    <option value="cairan">Cairan (Sirup/Drop)</option>
+                                    <option value="kapsul">Kapsul (Tablet/Pil)</option>
+                                    <option value="lainnya">Lainnya (Susu/Bubuk)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="product-price" class="form-label-admin">Harga (Rupiah) <span class="text-danger">*</span></label>
+                                <input type="number" id="product-price" class="form-control form-control-admin" placeholder="Contoh: 180000" min="0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="product-bpom" class="form-label-admin">Nomor BPOM <span class="text-danger">*</span></label>
+                                <input type="text" id="product-bpom" class="form-control form-control-admin" placeholder="Contoh: POM TR193629311" required>
+                            </div>
+                            <div class="col-md-6">
+                                    <label for="product-badge-text" class="form-label-admin">Teks Badge</label>
+                                    <input type="text" id="product-badge-text" class="form-control form-control-admin" placeholder="Contoh: Best Seller / New">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="product-badge-class" class="form-label-admin">Warna Badge</label>
+                                    <select id="product-badge-class" class="form-select form-control-admin" style="background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3e%3cpath fill=\'none\' stroke=\'%23ffffff\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M2 5l6 6 6-6\'/%3e%3c/svg%3e');">
+                                        <option value="">Tanpa Badge</option>
+                                        <option value="bg-success-light">Hijau (Success-Light)</option>
+                                        <option value="bg-warning-light">Kuning (Warning-Light)</option>
+                                        <option value="bg-info-light">Biru (Info-Light)</option>
+                                        <option value="bg-gold-light">Emas (Gold-Light)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-admin">Foto Produk (Maksimal 1 Foto Utama + 4 Foto Tambahan) <span class="text-danger">*</span></label>
+                                    <div class="d-flex flex-wrap gap-3 mt-2">
+                                        <!-- Foto Utama -->
+                                        <div class="image-upload-wrapper main-slot">
+                                            <input type="file" id="upload-main" accept="image/*" class="d-none">
+                                            <div class="upload-preview-box" id="preview-main-box" onclick="document.getElementById('upload-main').click()">
+                                                <div class="upload-placeholder" id="placeholder-main">
+                                                    <i class="fa-solid fa-camera-retro fs-3 mb-1 text-success"></i>
+                                                    <span class="small font-poppins text-white-50">* Utama</span>
+                                                </div>
+                                                <img src="" id="img-preview-main" class="d-none img-fluid rounded" alt="Foto Utama">
+                                                <button type="button" class="btn-remove-image d-none" onclick="event.stopPropagation(); window.removeProductImage('main')">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- Foto Tambahan 1 -->
+                                        <div class="image-upload-wrapper sub-slot">
+                                            <input type="file" id="upload-sub-1" accept="image/*" class="d-none">
+                                            <div class="upload-preview-box" id="preview-sub-1-box" onclick="document.getElementById('upload-sub-1').click()">
+                                                <div class="upload-placeholder" id="placeholder-sub-1">
+                                                    <i class="fa-solid fa-plus text-white-50"></i>
+                                                    <span class="small font-poppins text-white-50">Foto 1</span>
+                                                </div>
+                                                <img src="" id="img-preview-sub-1" class="d-none img-fluid rounded" alt="Foto 1">
+                                                <button type="button" class="btn-remove-image d-none" onclick="event.stopPropagation(); window.removeProductImage('sub-1')">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- Foto Tambahan 2 -->
+                                        <div class="image-upload-wrapper sub-slot">
+                                            <input type="file" id="upload-sub-2" accept="image/*" class="d-none">
+                                            <div class="upload-preview-box" id="preview-sub-2-box" onclick="document.getElementById('upload-sub-2').click()">
+                                                <div class="upload-placeholder" id="placeholder-sub-2">
+                                                    <i class="fa-solid fa-plus text-white-50"></i>
+                                                    <span class="small font-poppins text-white-50">Foto 2</span>
+                                                </div>
+                                                <img src="" id="img-preview-sub-2" class="d-none img-fluid rounded" alt="Foto 2">
+                                                <button type="button" class="btn-remove-image d-none" onclick="event.stopPropagation(); window.removeProductImage('sub-2')">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- Foto Tambahan 3 -->
+                                        <div class="image-upload-wrapper sub-slot">
+                                            <input type="file" id="upload-sub-3" accept="image/*" class="d-none">
+                                            <div class="upload-preview-box" id="preview-sub-3-box" onclick="document.getElementById('upload-sub-3').click()">
+                                                <div class="upload-placeholder" id="placeholder-sub-3">
+                                                    <i class="fa-solid fa-plus text-white-50"></i>
+                                                    <span class="small font-poppins text-white-50">Foto 3</span>
+                                                </div>
+                                                <img src="" id="img-preview-sub-3" class="d-none img-fluid rounded" alt="Foto 3">
+                                                <button type="button" class="btn-remove-image d-none" onclick="event.stopPropagation(); window.removeProductImage('sub-3')">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- Foto Tambahan 4 -->
+                                        <div class="image-upload-wrapper sub-slot">
+                                            <input type="file" id="upload-sub-4" accept="image/*" class="d-none">
+                                            <div class="upload-preview-box" id="preview-sub-4-box" onclick="document.getElementById('upload-sub-4').click()">
+                                                <div class="upload-placeholder" id="placeholder-sub-4">
+                                                    <i class="fa-solid fa-plus text-white-50"></i>
+                                                    <span class="small font-poppins text-white-50">Foto 4</span>
+                                                </div>
+                                                <img src="" id="img-preview-sub-4" class="d-none img-fluid rounded" alt="Foto 4">
+                                                <button type="button" class="btn-remove-image d-none" onclick="event.stopPropagation(); window.removeProductImage('sub-4')">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-text text-white-50 mt-2" style="font-size: 0.75rem;">Format gambar (.jpg, .jpeg, .png). Foto utama wajib diisi. Gambar otomatis dioptimasi untuk kecepatan loading.</div>
+                                </div>
+                            <div class="col-12">
+                                <label for="product-desc" class="form-label-admin">Deskripsi Produk <span class="text-danger">*</span></label>
+                                <textarea id="product-desc" class="form-control form-control-admin" rows="3" placeholder="Masukkan ringkasan khasiat produk..." required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="product-is-active" checked>
+                                    <label class="form-check-label text-white-50" for="product-is-active">Aktifkan produk (tampilkan di halaman pengguna)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer modal-footer-admin">
+                        <button type="button" class="btn btn-admin-outline" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-admin-gold">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Modal CRUD Barcode -->
+    <div class="modal fade" id="modal-barcode" tabindex="-1" aria-labelledby="modal-barcode-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-admin">
+                <div class="modal-header modal-header-admin">
+                    <h5 class="modal-title modal-title-admin text-white" id="modal-barcode-title">Form Barcode Keaslian</h5>
+                    <button type="button" class="btn-close btn-close-admin" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form-barcode" autocomplete="off">
+                    <input type="hidden" id="barcode-id-val">
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="barcode-code" class="form-label-admin">Kode Barcode Unik <span class="text-danger">*</span></label>
+                                <input type="text" id="barcode-code" class="form-control form-control-admin text-uppercase" placeholder="Contoh: WALATRA-QNC99" required>
+                                <div class="form-text text-white-50" style="font-size: 0.75rem;">Kode ini yang akan dimasukkan pengguna saat verifikasi. Harus unik.</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="barcode-product-id" class="form-label-admin">Relasi Produk <span class="text-danger">*</span></label>
+                                <select id="barcode-product-id" class="form-select form-control-admin" required style="background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3e%3cpath fill=\'none\' stroke=\'%23ffffff\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M2 5l6 6 6-6\'/%3e%3c/svg%3e');">
+                                    <!-- Dynamic product options load -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="barcode-status" class="form-label-admin">Status <span class="text-danger">*</span></label>
+                                <select id="barcode-status" class="form-select form-control-admin" required style="background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3e%3cpath fill=\'none\' stroke=\'%23ffffff\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M2 5l6 6 6-6\'/%3e%3c/svg%3e');">
+                                    <option value="genuine">Asli (Genuine)</option>
+                                    <option value="expired">Expired (Kadaluarsa)</option>
+                                    <option value="revoked">Dicabut (Revoked)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="barcode-batch" class="form-label-admin">Nomor Batch <span class="text-danger">*</span></label>
+                                <input type="text" id="barcode-batch" class="form-control form-control-admin" placeholder="Contoh: QNC-2026-05B" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="barcode-prod-date" class="form-label-admin">Tanggal Produksi <span class="text-danger">*</span></label>
+                                <input type="date" id="barcode-prod-date" class="form-control form-control-admin" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="barcode-exp-date" class="form-label-admin">Tanggal Kadaluarsa <span class="text-danger">*</span></label>
+                                <input type="date" id="barcode-exp-date" class="form-control form-control-admin" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer modal-footer-admin">
+                        <button type="button" class="btn btn-admin-outline" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-admin-gold">Simpan Barcode</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Modal Detail Pesan -->
+    <div class="modal fade" id="modal-message" tabindex="-1" aria-labelledby="modal-message-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-admin">
+                <div class="modal-header modal-header-admin">
+                    <h5 class="modal-title modal-title-admin text-white" id="modal-message-title"><i class="fa-solid fa-envelope-open me-2 text-warning"></i>Detail Pesan Konsultasi</h5>
+                    <button type="button" class="btn-close btn-close-admin" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="text-white-50 small mb-1">Pengirim</label>
+                        <div class="fw-bold font-poppins fs-5" id="msg-detail-name">Farrel</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-white-50 small mb-1">WhatsApp / Kontak</label>
+                        <div>
+                            <span class="fw-semibold text-white" id="msg-detail-phone">08123456789</span>
+                            <a href="#" target="_blank" id="msg-detail-wa-link" class="btn btn-sm btn-success ms-2 px-2 py-0.5" style="font-size: 0.75rem;"><i class="fa-brands fa-whatsapp me-1"></i>Balas WA</a>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-white-50 small mb-1">Keperluan / Subjek</label>
+                        <div class="fw-semibold text-warning" id="msg-detail-subject">Konsultasi Penyakit</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-white-50 small mb-1">Waktu Masuk</label>
+                        <div class="small text-white-50" id="msg-detail-time">2026-06-17 12:00</div>
+                    </div>
+                    <div class="p-3 rounded bg-white-5" style="border: 1px solid rgba(255,255,255,0.08); background-color: rgba(255,255,255,0.03);">
+                        <label class="text-white-50 small mb-1 d-block border-bottom border-secondary border-opacity-25 pb-1">Isi Pesan:</label>
+                        <p class="mb-0 text-white" style="white-space: pre-wrap; line-height: 1.5;" id="msg-detail-body">Teks pesan...</p>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-admin">
+                    <button type="button" class="btn btn-admin-outline w-100" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap Bundle with Popper JS via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- Admin Logic JavaScript -->
+    <script src="admin.js"></script>
+</body>
+
+</html>
